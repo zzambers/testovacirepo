@@ -1,0 +1,26 @@
+name: JDK8 build test
+
+on:
+  push:
+    branches-ignore:
+      - master
+      - pr/*
+
+jobs:
+  linux_x64_build:
+    name: Linux
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout the source
+        uses: actions/checkout@v3
+      - name: Build jdk8
+        run: >
+          printf '%s\n'
+          'FROM quay.io/centos/centos:stream9'
+          'RUN dnf -y groupinstall "Development Tools" \'
+          '&& dnf -y install java-1.8.0-openjdk-devel alsa-lib-devel cups-devel fontconfig-devel freetype-devel libX11-devel libXext-devel libXi-devel libXinerama-devel libXrender-devel libXt-devel libXtst-devel xorg-x11-proto-devel \'
+          '&& git clone --depth=1 https://github.com/openjdk/jdk8u-dev.git \'
+          '&& cd jdk8u-dev \'
+          '&& bash configure --with-boot-jdk=/usr/lib/jvm/java-1.8.0-openjdk \'
+          '&& make images'
+          | docker build -t 'jdk8-centos9:latest' -
