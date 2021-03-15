@@ -28,8 +28,14 @@ jobs:
           fi
       - name: "install"
         shell: msys2 {0}
+        timeout-minutes: 10
         run: |
-          ./as-installer-7.0.2389-full.exe -passive -norestart -log install.log
+          set -x
+          ./as-installer-7.0.2389-full.exe -passive -norestart -log install.log &
+          pid=$!
+          sleep 5
+          ps aux
+          wait $pid
       - name: "check files"
         if: ${{ always() }}
         shell: msys2 {0}
