@@ -34,7 +34,7 @@ jobs:
           ./as-installer-7.0.2389-full.exe -passive -norestart -log install.log &
           pid=$!
           sleep 5
-          ps aux
+          ps -W
           wait $pid
       - name: "check files"
         if: ${{ always() }}
