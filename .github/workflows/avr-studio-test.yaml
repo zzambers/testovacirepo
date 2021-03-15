@@ -20,13 +20,19 @@ jobs:
           path: |
             as-installer-7.0.2389-full.exe
           key: 7.0.2389
-      - name: Run build
+      - name: "download-installer"
         shell: msys2 {0}
         run: |
           if ! [ -e as-installer-7.0.2389-full.exe ] ; then
               curl -L -f -o as-installer-7.0.2389-full.exe http://studio.download.atmel.com/7.0.2389/as-installer-7.0.2389-full.exe
           fi
-          #msiexec /i as-installer-7.0.2389-full.exe /qn /norestart /L*V "install.log" &
-          #sleep 5
-          #tail -f install.log &
-          #wait
+      - name: "install"
+          run: |
+            msiexec /i as-installer-7.0.2389-full.exe /quiet /norestart /L*V "install.log"
+      - name: "check files"
+          if: ${{ always() }}
+          shell: msys2 {0}
+          run: |
+             ls
+             ls "C:\\"
+             ls "C:\\Program Files (x86)\\"
