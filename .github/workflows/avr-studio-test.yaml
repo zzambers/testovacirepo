@@ -27,8 +27,9 @@ jobs:
               curl -L -f -o as-installer-7.0.2389-full.exe http://studio.download.atmel.com/7.0.2389/as-installer-7.0.2389-full.exe
           fi
       - name: "install"
+        shell: msys2 {0}
         run: |
-          ./as-installer-7.0.2389-full.exe /passive /norestart /log install.log
+          ./as-installer-7.0.2389-full.exe -passive -norestart -log install.log
       - name: "check files"
         if: ${{ always() }}
         shell: msys2 {0}
