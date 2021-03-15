@@ -28,11 +28,12 @@ jobs:
           fi
       - name: "install"
         run: |
-          msiexec /i as-installer-7.0.2389-full.exe /quiet /norestart /L*V "install.log"
+          as-installer-7.0.2389-full.exe -quiet -log install.log
       - name: "check files"
         if: ${{ always() }}
         shell: msys2 {0}
         run: |
+          cat install.log || :
           ls
           ls "C:\\"
           ls "C:\\Program Files (x86)\\"
