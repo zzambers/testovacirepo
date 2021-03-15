@@ -28,13 +28,14 @@ jobs:
           fi
       - name: "install"
         run: |
-          ./as-installer-7.0.2389-full.exe -quiet -log install.log
+          ./as-installer-7.0.2389-full.exe /passive /norestart /log install.log
       - name: "check files"
         if: ${{ always() }}
         shell: msys2 {0}
         run: |
           set -x
-          cat install.log || :
+          sleep 10
+          cat install.log || true
           ls
           ls "C:\\"
           ls "C:\\Program Files\\"
