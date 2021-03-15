@@ -38,7 +38,7 @@ jobs:
           ps -W
           while kill -0 $pid ; do
               #killall drvinst.exe || true
-              taskkill /im drvinst.exe
+              MSYS2_ARG_CONV_EXCL='/im' taskkill /im drvinst.exe || true
               sleep 5
           done
           wait $pid
