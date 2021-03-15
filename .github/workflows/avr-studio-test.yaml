@@ -14,6 +14,7 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           release: false
+          install: psmisc
       - name: Cache multiple paths
         uses: actions/cache@v2
         with:
@@ -35,6 +36,10 @@ jobs:
           pid=$!
           sleep 5
           ps -W
+          while kill -0 $pid ; do
+              killall drvinst.exe
+              sleep 5
+          done
           wait $pid
       - name: "check files"
         if: ${{ always() }}
