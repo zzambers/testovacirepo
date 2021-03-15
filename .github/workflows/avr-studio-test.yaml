@@ -29,7 +29,7 @@ jobs:
           fi
       - name: "install"
         shell: msys2 {0}
-        timeout-minutes: 7
+        timeout-minutes: 30
         run: |
           set -x
           ./as-installer-7.0.2389-full.exe -passive -norestart -log install.log &
@@ -53,3 +53,5 @@ jobs:
           ls "C:\\"
           ls "C:\\Program Files\\"
           ls "C:\\Program Files (x86)\\"
+          ls "C:\Program Files (x86)\Atmel\Studio\"
+          printenv
