@@ -28,7 +28,7 @@ jobs:
           fi
       - name: "install"
         shell: msys2 {0}
-        timeout-minutes: 10
+        timeout-minutes: 5
         run: |
           set -x
           ./as-installer-7.0.2389-full.exe -passive -norestart -log install.log &
@@ -41,7 +41,7 @@ jobs:
         shell: msys2 {0}
         run: |
           set -x
-          sleep 10
+          ps -W
           cat install.log || true
           ls
           ls "C:\\"
