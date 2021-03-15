@@ -29,7 +29,7 @@ jobs:
           fi
       - name: "install"
         shell: msys2 {0}
-        timeout-minutes: 5
+        timeout-minutes: 7
         run: |
           set -x
           ./as-installer-7.0.2389-full.exe -passive -norestart -log install.log &
@@ -38,7 +38,7 @@ jobs:
           ps -W
           while kill -0 $pid ; do
               #killall drvinst.exe || true
-              MSYS2_ARG_CONV_EXCL='/im' taskkill /im drvinst.exe || true
+              MSYS2_ARG_CONV_EXCL='/im;/f' taskkill /f /im drvinst.exe || true
               sleep 5
           done
           wait $pid
