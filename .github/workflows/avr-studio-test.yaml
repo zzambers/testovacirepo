@@ -8,7 +8,7 @@ on:
 jobs:
   avr-studio-install:
     name: "avr-studio-install"
-    runs-on: "windows-2016"
+    runs-on: "windows-2019"
     steps:
       - uses: actions/checkout@v2
       - uses: msys2/setup-msys2@v2
@@ -41,7 +41,8 @@ jobs:
               MSYS2_ARG_CONV_EXCL='/im;/f' taskkill /f /im drvinst.exe || true
               sleep 5
           done
-          wait $pid
+          wait $pid || true
+          [ -f install.log ]
       - name: "check files"
         if: ${{ always() }}
         shell: msys2 {0}
@@ -53,5 +54,9 @@ jobs:
           ls "C:\\"
           ls "C:\\Program Files\\"
           ls "C:\\Program Files (x86)\\"
-          ls "C:\Program Files (x86)\Atmel\Studio\"
+          ls "C:\\Program Files (x86)\\Atmel\\Studio\\"
+          ls "C:\\Program Files\\Atmel\\Studio\\" || true
           printenv
+          type atmelstudio || true
+          "C:\\Program Files (x86)\\Atmel\\Studio\\atmelstudio.exe" -help || true
+          "C:\\Program Files\\Atmel\\Studio\\atmelstudio.exe" -help || true
