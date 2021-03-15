@@ -15,11 +15,12 @@ jobs:
         with:
           release: false
           install: psmisc
-      - name: Cache multiple paths
+      - name: Installers cache
         uses: actions/cache@v2
         with:
           path: |
             as-installer-7.0.2389-full.exe
+            arduino-1.8.13-windows.exe
           key: 7.0.2389
       - name: "download-installer"
         shell: msys2 {0}
@@ -60,3 +61,19 @@ jobs:
           type atmelstudio || true
           "C:\\Program Files (x86)\\Atmel\\Studio\\atmelstudio.exe" -help || true
           "C:\\Program Files\\Atmel\\Studio\\atmelstudio.exe" -help || true
+      - name: "arduino install"
+        if: ${{ always() }}
+        shell: msys2 {0}
+        timeout-minutes: 30
+        run: |
+          set -x
+          curl -L -f -o https://downloads.arduino.cc/arduino-1.8.13-windows.exe
+          ./arduino-1.8.13-windows.exe /S /NCRC
+          type arduio || true
+      - name: "arduino run"
+        if: ${{ always() }}
+        shell: msys2 {0}
+        timeout-minutes: 30
+        run: |
+          type arduio || true
+          arduino --install-boards samd || true
