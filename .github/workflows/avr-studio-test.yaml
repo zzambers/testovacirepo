@@ -26,7 +26,7 @@ jobs:
           if ! [ -e as-installer-7.0.2389-full.exe ] ; then
               curl -L -f -o as-installer-7.0.2389-full.exe http://studio.download.atmel.com/7.0.2389/as-installer-7.0.2389-full.exe
           fi
-          msiexec /i as-installer-7.0.2389-full.exe /qn /norestart /L*V "install.log" &
-          sleep 5
-          tail -f install.log &
-          wait
+          #msiexec /i as-installer-7.0.2389-full.exe /qn /norestart /L*V "install.log" &
+          #sleep 5
+          #tail -f install.log &
+          #wait
