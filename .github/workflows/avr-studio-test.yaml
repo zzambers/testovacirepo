@@ -37,7 +37,7 @@ jobs:
           sleep 5
           ps -W
           while kill -0 $pid ; do
-              killall drvinst.exe
+              killall drvinst.exe || true
               sleep 5
           done
           wait $pid
