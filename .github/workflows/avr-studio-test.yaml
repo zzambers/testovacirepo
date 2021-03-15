@@ -33,7 +33,9 @@ jobs:
         if: ${{ always() }}
         shell: msys2 {0}
         run: |
+          set -x
           cat install.log || :
           ls
           ls "C:\\"
+          ls "C:\\Program Files\\"
           ls "C:\\Program Files (x86)\\"
