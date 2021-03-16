@@ -10,7 +10,7 @@ jobs:
     name: Build VariYO
     runs-on: "windows-2016"
     env:
-      ARDUINO_VER: 1.8.13
+      ARDUINO_VER: 1.8.1
       ATMEL_VER: 7.0.2389
     steps:
       - name: Checkout repository
@@ -28,6 +28,7 @@ jobs:
           path: |
             ${{ runner.temp }}/as-installer-${{ env.ARDUINO_VER }}-full.exe
             ${{ runner.temp }}/arduino-${{ env.ATMEL_VER }}-windows.zip
+            C:/Users/runneradmin/AppData/Local/Arduino15/cache
           key: ${{ env.ATMEL_VER }}-${{ env.ARDUINO_VER }}
       - name: Download installers
         shell: msys2 {0}
