@@ -76,10 +76,10 @@ jobs:
           set -x
           ps -W
           cat install.log || true
-       - name: Build
-         run: |
-           set -x
-           "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\atmelstudio.exe" -h || true
-           ls "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\"
-           ls "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\"
-           find
+      - name: Build
+        run: |
+          set -x
+          "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\atmelstudio.exe" -h || true
+          ls "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\"
+          ls "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\"
+          find
