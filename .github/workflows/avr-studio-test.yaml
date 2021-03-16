@@ -6,14 +6,17 @@ on:
       - "test-avr-studio"
 
 jobs:
-  avr-studio-install:
-    name: "avr-studio-install"
+  build-variyo:
+    name: Build VariYO
     runs-on: "windows-2016"
     env:
       ARDUINO_VER: 1.8.13
       ATMEL_VER: 7.0.2389
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          repository: Jenatko/VariYO
       - name: Setup msys
         uses: msys2/setup-msys2@v2
         with:
@@ -45,10 +48,10 @@ jobs:
         run: |
           set -eux
           PF="C:\\Program Files (x86)"
-          unzip -d "${PF}" arduino-${ARDUINO_VER}-windows.zip
+          unzip -q -d "${PF}" arduino-${ARDUINO_VER}-windows.zip
           mv "${PF}\\arduino-${ARDUINO_VER}" "${PF}\\Arduino"
           "${PF}\\Arduino\\arduino" --install-boards arduino:samd || true
-      - name: Install AVR Strudio
+      - name: Install Atmel Strudio
         shell: msys2 {0}
         working-directory: ${{ runner.temp }}
         timeout-minutes: 30
@@ -65,7 +68,7 @@ jobs:
           wait $pid || true
           [ -f install.log ]
           [ -d "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\" ]
-      - name: Debug AVR studio install failures
+      - name: Debug Atmel studio install failures
         if: ${{ failure() }}
         shell: msys2 {0}
         working-directory: ${{ runner.temp }}
@@ -73,3 +76,10 @@ jobs:
           set -x
           ps -W
           cat install.log || true
+       - name: Build
+         run: |
+           set -x
+           "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\atmelstudio.exe" -h || true
+           ls "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\"
+           ls "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\"
+           find
