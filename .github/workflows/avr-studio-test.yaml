@@ -1,4 +1,9 @@
-name: "avr-studio-test"
+# Workflow file to build Atmel studio project (solution)
+# should be easily reusable (by changing SOLUTION_FILE env. variable)
+# for the earlier evolution of this workflow see:
+# https://github.com/zzambers/testovacirepo/tree/test-avr-studio
+
+name: "Project build"
 
 on:
   push:
@@ -6,10 +11,11 @@ on:
       - "test-avr-studio"
 
 jobs:
-  build-variyo:
+  build-project:
     name: Build VariYO
     runs-on: "windows-2019"
     env:
+      SOLUTION_FILE: VarioSW_as.atsln
       ARDUINO_VER: 1.8.13
       ATMEL_VER: 7.0.2389
     steps:
@@ -62,12 +68,18 @@ jobs:
           pid=$!
           sleep 5
           ps -W
+          # while instaler is running...
           while kill -0 $pid ; do
+              # kill driver installation processes as they promt user for
+              # confirmation and cause installation to hang...
               MSYS2_ARG_CONV_EXCL='/im;/f' taskkill /f /im drvinst.exe || true
               sleep 5
           done
+          # expected non-zero here, as driver installers were killed
           wait $pid || true
           ps -W
+          # Consider installation success if these exist as we cannot
+          # use installer exit value
           [ -f install.log ] || exit 1
           [ -d "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\" ] || exit 1
       - name: Install Atmel Strudio Log
@@ -83,7 +95,7 @@ jobs:
           set -x
           # See:
           # https://microchipsupport.force.com/s/article/Building-an-Atmel-Studio-solution-via-commandline
-          MSYS2_ARG_CONV_EXCL='/clean;/rebuild;/build;/out' "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\AtmelStudio.exe" VarioSW_as.atsln /rebuild debug /out build-debug.log
+          MSYS2_ARG_CONV_EXCL='/clean;/rebuild;/build;/out' "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\AtmelStudio.exe" "${SOLUTION_FILE}" /rebuild debug /out build-debug.log
       - name: Debug Build Log
         if: ${{ always() }}
         shell: msys2 {0}
@@ -96,8 +108,8 @@ jobs:
           set -x
           # See:
           # https://microchipsupport.force.com/s/article/Building-an-Atmel-Studio-solution-via-commandline
-          MSYS2_ARG_CONV_EXCL='/clean;/rebuild;/build;/out' "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\AtmelStudio.exe" VarioSW_as.atsln /rebuild release /out build-release.log
-      - name: Debug Build Log
+          MSYS2_ARG_CONV_EXCL='/clean;/rebuild;/build;/out' "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\AtmelStudio.exe" "${SOLUTION_FILE}" /rebuild release /out build-release.log
+      - name: Release Build Log
         if: ${{ always() }}
         shell: msys2 {0}
         run: |
