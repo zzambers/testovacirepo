@@ -8,7 +8,7 @@ on:
 jobs:
   build-variyo:
     name: Build VariYO
-    runs-on: "windows-2016"
+    runs-on: "windows-2019"
     env:
       ARDUINO_VER: 1.8.13
       ATMEL_VER: 7.0.2389
@@ -68,29 +68,28 @@ jobs:
               sleep 5
           done
           wait $pid || true
-          [ -f install.log ]
-          [ -d "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\" ]
-      - name: Debug Atmel studio install failures
-        if: ${{ failure() }}
+          ps -W
+          [ -f install.log ] || exit 1
+          [ -d "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\" ] || exit 1
+      - name: Install Atmel Strudio Log
+        if: ${{ always() }}
         shell: msys2 {0}
         working-directory: ${{ runner.temp }}
         run: |
           set -x
-          ps -W
-          cat install.log || true
+          [ -f install.log ] && cat install.log
       - name: Build
         shell: msys2 {0}
+        timeout-minutes: 30
         run: |
           set -x
           ls "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\"
           # See:
           # https://microchipsupport.force.com/s/article/Building-an-Atmel-Studio-solution-via-commandline
-          MSYS2_ARG_CONV_EXCL='/build;/out' "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\AtmelStudio.exe" VarioSW_as.atsln /build debug /out build.log || true
-          cat build.log || true
-          find
-      - name: Print build log
+          MSYS2_ARG_CONV_EXCL='/build;/out' "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\AtmelStudio.exe" VarioSW_as.atsln /build debug /out build.log
+      - name: Build Log
         if: ${{ always() }}
         shell: msys2 {0}
         run: |
           set -x
-          cat build.log || true
+          [ -f build.log ] && cat build.log
