@@ -50,7 +50,8 @@ jobs:
           PF="C:\\Program Files (x86)"
           unzip -q -d "${PF}" arduino-${ARDUINO_VER}-windows.zip
           mv "${PF}\\arduino-${ARDUINO_VER}" "${PF}\\Arduino"
-          "${PF}\\Arduino\\arduino" --install-boards arduino:samd || true
+          { "${PF}\\Arduino\\arduino" --install-boards arduino:samd || touch .fail ; } 2>&1 | tee arduino-boards.log
+          ! [ -f .fail ]
       - name: Install Atmel Strudio
         shell: msys2 {0}
         working-directory: ${{ runner.temp }}
@@ -77,6 +78,7 @@ jobs:
           ps -W
           cat install.log || true
       - name: Build
+        shell: msys2 {0}
         run: |
           set -x
           "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\atmelstudio.exe" -h || true
