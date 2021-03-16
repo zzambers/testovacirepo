@@ -21,11 +21,10 @@ jobs:
           install: psmisc unzip
       - name: Installers cache
         uses: actions/cache@v2
-        working-directory: ${{ runner.temp }}
         with:
           path: |
-            as-installer-${{ env.ARDUINO_VER }}-full.exe
-            arduino-${{ env.ATMEL_VER }}-windows.zip
+            ${{ runner.temp }}/as-installer-${{ env.ARDUINO_VER }}-full.exe
+            ${{ runner.temp }}/arduino-${{ env.ATMEL_VER }}-windows.zip
           key: ${{ env.ATMEL_VER }}-${{ env.ARDUINO_VER }}
       - name: Download installers
         shell: msys2 {0}
