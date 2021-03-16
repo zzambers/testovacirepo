@@ -82,7 +82,7 @@ jobs:
         shell: msys2 {0}
         run: |
           set -x
-          "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\atmelstudio.exe" -h || true
           ls "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\"
-          ls "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\"
+          "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\atmelstudio.exe" VarioSW_as.atsln /build debug /out log.txt || true
+          cat log.txt || true
           find
