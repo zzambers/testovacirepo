@@ -76,14 +76,12 @@ jobs:
         shell: msys2 {0}
         working-directory: ${{ runner.temp }}
         run: |
-          set -x
           [ -f install.log ] && cat install.log
       - name: Build
         shell: msys2 {0}
         timeout-minutes: 30
         run: |
           set -x
-          ls "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\"
           # See:
           # https://microchipsupport.force.com/s/article/Building-an-Atmel-Studio-solution-via-commandline
           MSYS2_ARG_CONV_EXCL='/build;/out' "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\AtmelStudio.exe" VarioSW_as.atsln /build debug /out build.log
@@ -91,5 +89,4 @@ jobs:
         if: ${{ always() }}
         shell: msys2 {0}
         run: |
-          set -x
           [ -f build.log ] && cat build.log
