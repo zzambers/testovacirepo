@@ -21,15 +21,14 @@ jobs:
         uses: msys2/setup-msys2@v2
         with:
           release: false
-          install: psmisc unzip
+          install: psmisc zip unzip
       - name: Installers cache
         uses: actions/cache@v2
         with:
           path: |
             ${{ runner.temp }}/as-installer-${{ env.ARDUINO_VER }}-full.exe
             ${{ runner.temp }}/arduino-${{ env.ATMEL_VER }}-windows.zip
-            C:/Users/runneradmin/AppData/Local/Arduino15/cache
-          key: ${{ env.ATMEL_VER }}-${{ env.ARDUINO_VER }}
+          key: ${{ env.ATMEL_VER }}-${{ env.ARDUINO_VER }}-v1
       - name: Download installers
         shell: msys2 {0}
         working-directory: ${{ runner.temp }}
@@ -77,16 +76,29 @@ jobs:
         working-directory: ${{ runner.temp }}
         run: |
           [ -f install.log ] && cat install.log
-      - name: Build
+      - name: Debug Build
         shell: msys2 {0}
         timeout-minutes: 30
         run: |
           set -x
           # See:
           # https://microchipsupport.force.com/s/article/Building-an-Atmel-Studio-solution-via-commandline
-          MSYS2_ARG_CONV_EXCL='/build;/out' "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\AtmelStudio.exe" VarioSW_as.atsln /build debug /out build.log
-      - name: Build Log
+          MSYS2_ARG_CONV_EXCL='/clean;/rebuild;/build;/out' "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\AtmelStudio.exe" VarioSW_as.atsln /rebuild debug /out build-debug.log
+      - name: Debug Build Log
         if: ${{ always() }}
         shell: msys2 {0}
         run: |
-          [ -f build.log ] && cat build.log
+          [ -f build-debug.log ] && cat build-debug.log
+      - name: Release Build
+        shell: msys2 {0}
+        timeout-minutes: 30
+        run: |
+          set -x
+          # See:
+          # https://microchipsupport.force.com/s/article/Building-an-Atmel-Studio-solution-via-commandline
+          MSYS2_ARG_CONV_EXCL='/clean;/rebuild;/build;/out' "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\AtmelStudio.exe" VarioSW_as.atsln /rebuild release /out build-release.log
+      - name: Debug Build Log
+        if: ${{ always() }}
+        shell: msys2 {0}
+        run: |
+          [ -f build-release.log ] && cat build-release.log
