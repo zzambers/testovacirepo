@@ -38,8 +38,10 @@ jobs:
       - name: Installers cache
         uses: actions/cache@v2
         with:
-          path: ${{ runner.temp }}/as-installer-${{ env.ARDUINO_VER }}-full.exe
-          key: ${{ env.ATMEL_VER }}-${{ env.ARDUINO_VER }}-v2
+          path: |
+            ${{ runner.temp }}/as-installer-${{ env.ATMEL_VER }}-full.exe
+            ${{ runner.temp }}/arduino-${{ env.ARDUINO_VER }}-windows.zip
+          key: ${{ env.ATMEL_VER }}-${{ env.ARDUINO_VER }}-v3
       - name: Download installers
         shell: msys2 {0}
         working-directory: ${{ runner.temp }}
