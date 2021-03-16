@@ -83,6 +83,14 @@ jobs:
         run: |
           set -x
           ls "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\"
-          "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\atmelstudio.exe" VarioSW_as.atsln /build debug /out log.txt || true
-          cat log.txt || true
+          # See:
+          # https://microchipsupport.force.com/s/article/Building-an-Atmel-Studio-solution-via-commandline
+          MSYS2_ARG_CONV_EXCL='/build;/out' "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\AtmelStudio.exe" VarioSW_as.atsln /build debug /out build.log || true
+          cat build.log || true
           find
+      - name: Print build log
+        if: ${{ always() }}
+        shell: msys2 {0}
+        run: |
+          set -x
+          cat build.log || true
