@@ -9,84 +9,68 @@ jobs:
   avr-studio-install:
     name: "avr-studio-install"
     runs-on: "windows-2016"
+    env:
+      ARDUINO_VER: 1.8.13
+      ATMEL_VER: 7.0.2389
     steps:
       - uses: actions/checkout@v2
-      - uses: msys2/setup-msys2@v2
+      - name: Setup msys
+        uses: msys2/setup-msys2@v2
         with:
           release: false
           install: psmisc unzip
       - name: Installers cache
         uses: actions/cache@v2
+        working-directory: ${{ runner.temp }}
         with:
           path: |
-            as-installer-7.0.2389-full.exe
-            arduino-1.8.13-windows.exe
-          key: 7.0.2389
-      - name: "download-installer"
+            as-installer-${{ env.ARDUINO_VER }}-full.exe
+            arduino-${{ env.ATMEL_VER }}-windows.zip
+          key: ${{ env.ATMEL_VER }}-${{ env.ARDUINO_VER }}
+      - name: Download installers
         shell: msys2 {0}
-        run: |
-          if ! [ -e as-installer-7.0.2389-full.exe ] ; then
-              curl -L -f -o as-installer-7.0.2389-full.exe http://studio.download.atmel.com/7.0.2389/as-installer-7.0.2389-full.exe
-          fi
-      - name: "install"
-        shell: msys2 {0}
+        working-directory: ${{ runner.temp }}
         timeout-minutes: 30
-        if: false
         run: |
-          set -x
-          ./as-installer-7.0.2389-full.exe -passive -norestart -log install.log &
+          set -eux
+          if ! [ -e as-installer-${ATMEL_VER}-full.exe ] ; then
+              curl -L -f -o as-installer-${ATMEL_VER}-full.exe http://studio.download.atmel.com/${ATMEL_VER}/as-installer-${ATMEL_VER}-full.exe
+          fi
+          if ! [ -e arduino-${ARDUINO_VER}-windows.zip ] ; then
+              curl -L -f -o arduino-${ARDUINO_VER}-windows.zip https://downloads.arduino.cc/arduino-${ARDUINO_VER}-windows.zip
+          fi
+      - name: Install arduino
+        shell: msys2 {0}
+        working-directory: ${{ runner.temp }}
+        timeout-minutes: 30
+        run: |
+          set -eux
+          PF="C:\\Program Files (x86)"
+          unzip -d "${PF}" arduino-${ARDUINO_VER}-windows.zip
+          mv "${PF}\\arduino-${ARDUINO_VER}" "${PF}\\Arduino"
+          "${PF}\\Arduino\\arduino" --install-boards arduino:samd || true
+      - name: Install AVR Strudio
+        shell: msys2 {0}
+        working-directory: ${{ runner.temp }}
+        timeout-minutes: 30
+        run: |
+          set -eux
+          ./as-installer-${ATMEL_VER}-full.exe -passive -norestart -log install.log &
           pid=$!
           sleep 5
           ps -W
           while kill -0 $pid ; do
-              #killall drvinst.exe || true
               MSYS2_ARG_CONV_EXCL='/im;/f' taskkill /f /im drvinst.exe || true
               sleep 5
           done
           wait $pid || true
           [ -f install.log ]
-      - name: "check files"
-        if: ${{ always() }}
+          [ -d "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\" ]
+      - name: Debug AVR studio install failures
+        if: ${{ failure() }}
         shell: msys2 {0}
+        working-directory: ${{ runner.temp }}
         run: |
           set -x
           ps -W
           cat install.log || true
-          ls
-          ls "C:\\"
-          ls "C:\\Program Files\\"
-          ls "C:\\Program Files (x86)\\"
-          ls "C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\"
-          ls "C:\\Program Files\\Atmel\\Studio\\7.0\\" || true
-          printenv
-          type atmelstudio || true
-          "C:\\Program Files (x86)\\Atmel\\Studio\\atmelstudio.exe" -help || true
-          "C:\\Program Files\\Atmel\\Studio\\atmelstudio.exe" -help || true
-      - name: "arduino install"
-        if: ${{ always() }}
-        shell: msys2 {0}
-        timeout-minutes: 30
-        run: |
-          set -x
-          curl -L -f -o "arduino-1.8.13-windows.zip" https://downloads.arduino.cc/arduino-1.8.13-windows.zip
-          PF="C:\\Program Files (x86)"
-          unzip -d "${PF}" arduino-1.8.13-windows.zip
-          mv "${PF}\\arduino-1.8.13" "${PF}\\Arduino"
-          #curl -L -f -o "arduino-1.8.13-windows.exe" https://downloads.arduino.cc/arduino-1.8.13-windows.exe
-          #./arduino-1.8.13-windows.exe /S /NCRC &
-          #pid=$!
-          #while kill -0 $pid ; do
-          #    #killall drvinst.exe || true
-          #    MSYS2_ARG_CONV_EXCL='/im;/f' taskkill /f /im drvinst.exe || true
-          #    sleep 5
-          #done
-          #wait $pid || true
-          #type arduio || true
-      - name: "arduino run"
-        if: ${{ always() }}
-        shell: msys2 {0}
-        timeout-minutes: 30
-        run: |
-          set +x
-          type arduino || true
-          "C:\\Program Files (x86)\\Arduino\\arduino" --install-boards arduino:samd || true
