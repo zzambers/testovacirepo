@@ -1,0 +1,24 @@
+name: "Container-test"
+
+on:
+  push:
+    branches:
+      - "test-container"
+
+#  push:
+#    branches:
+#      - "*"
+#  pull_request:
+#    branches:
+#      - "*"
+
+jobs:
+  test-container:
+    name: Test container
+    runs-on: "ubuntu-latest"
+    container: centos:6
+    steps:
+      - name: Check system
+        run: |
+          cat /etc/redhat-release
+          id
