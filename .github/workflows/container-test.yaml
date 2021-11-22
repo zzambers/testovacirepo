@@ -38,7 +38,8 @@ jobs:
     steps:
       - name: Check system
         run: |
-          cat /etc/redhat-release
+          cat /etc/os-release || true
+          lsb_release || true
           id
           pwd
           ls -lah
