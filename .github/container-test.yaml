@@ -5,13 +5,6 @@ on:
     branches:
       - "test-container"
 
-#  push:
-#    branches:
-#      - "*"
-#  pull_request:
-#    branches:
-#      - "*"
-
 jobs:
   test-container:
     name: Test container
