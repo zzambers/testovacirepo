@@ -12,10 +12,11 @@ jobs:
     steps:
       - name: Check system
         run: |
-          cat /etc/redhat-release
+          cat /etc/os-release || true
+          lsb_release || true
           id
           pwd
-          ls
+          ls -lah
 
   test-container:
     name: Test container
@@ -27,5 +28,5 @@ jobs:
           cat /etc/redhat-release
           id
           pwd
-          ls
+          ls -lah
 
