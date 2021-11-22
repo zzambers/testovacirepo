@@ -29,14 +29,3 @@ jobs:
           pwd
           ls
 
-  test-container2:
-    name: Test container2
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: Check system
-        uses: docker://centos:7
-        run: |
-          cat /etc/redhat-release
-          id
-          pwd
-          ls
