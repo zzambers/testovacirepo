@@ -6,6 +6,16 @@ on:
       - "test-container"
 
 jobs:
+  test-normal:
+    name: Test normal
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Check system
+        run: |
+          cat /etc/redhat-release
+          id
+          pwd
+
   test-container:
     name: Test container
     runs-on: "ubuntu-latest"
@@ -15,3 +25,17 @@ jobs:
         run: |
           cat /etc/redhat-release
           id
+          pwd
+          ls
+
+  test-container2:
+    name: Test container2
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Check system
+        uses: docker://centos:7
+        run: |
+          cat /etc/redhat-release
+          id
+          pwd
+          ls
