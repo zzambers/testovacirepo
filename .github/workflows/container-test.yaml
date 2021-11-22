@@ -15,6 +15,7 @@ jobs:
           cat /etc/redhat-release
           id
           pwd
+          ls
 
   test-container:
     name: Test container
