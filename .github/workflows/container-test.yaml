@@ -16,13 +16,13 @@ jobs:
       - id: system-select
         run: |
           echo "::set-output name=os::ubuntu-latest"
-          echo "::set-output name=container::centos:6"
+          echo "::set-output name=container::"
 
 # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#jobsjob_idoutputs
   run-os:
     name: run-os
     needs: select-os
-    if: ${{ needs.select-os.outputs.container == 0 }}
+    if: ${{ needs.select-os.outputs.container == 0 || false }}
     runs-on: ${{ needs.select-os.outputs.os }}
     steps:
       - name: Check system
@@ -35,7 +35,7 @@ jobs:
   run-container:
     name: run-container
     needs: select-os
-    if: ${{ needs.select-os.outputs.container != 0 }}
+    if: ${{ true }}
     runs-on: ${{ needs.select-os.outputs.os }}
     container:
       image: ${{ needs.select-os.outputs.container }}
@@ -46,3 +46,4 @@ jobs:
           id
           pwd
           ls -lah
+
