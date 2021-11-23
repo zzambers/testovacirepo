@@ -7,18 +7,18 @@ on:
 
 jobs:
   select-os:
-    name: select os
+    name: select-os
     runs-on: "ubuntu-latest"
     outputs:
       os: ${{ steps.system-select.outputs.os }}
     steps:
-      - name: system-select
+      - id: system-select
         run: |
           echo "::set-output name=os::ubuntu-latest"
 
 # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#jobsjob_idoutputs
   run:
-    name: run os
+    name: run-os
     needs: select-os
     runs-on: ${{ needs.select-os.outputs.os }}
     steps:
