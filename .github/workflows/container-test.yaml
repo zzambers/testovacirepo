@@ -19,7 +19,7 @@ jobs:
           echo "::set-output name=container::centos:6"
 
 # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#jobsjob_idoutputs
-  run:
+  run-os:
     name: run-os
     needs: select-os
     if: ${{ needs.select-os.outputs.container == 0 }}
@@ -32,7 +32,7 @@ jobs:
           pwd
           ls -lah
 
-  run:
+  run-container:
     name: run-container
     needs: select-os
     if: ${{ needs.select-os.outputs.container != 0 }}
