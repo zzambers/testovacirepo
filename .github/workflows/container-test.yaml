@@ -16,7 +16,7 @@ jobs:
       - id: system-select
         run: |
           echo "::set-output name=os::ubuntu-latest"
-          echo "::set-output name=container::"
+          echo "::set-output name=container::centos:6"
 
 # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#jobsjob_idoutputs
   run-os:
@@ -37,10 +37,9 @@ jobs:
     needs: select-os
     if: ${{ true }}
     runs-on: ${{ needs.select-os.outputs.os }}
-    container:
-      image: ${{ needs.select-os.outputs.container }}
     steps:
       - name: Check system
+        uses: docker://${{ needs.select-os.outputs.container }}
         run: |
           cat /etc/os-release || true
           id
