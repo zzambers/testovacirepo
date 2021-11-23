@@ -40,9 +40,7 @@ jobs:
     steps:
       - name: Check system
         uses: docker://${{ needs.select-os.outputs.container }}
-        run: |
-          cat /etc/os-release || true
-          id
-          pwd
-          ls -lah
+        with:
+          args: ls -lah
+
 
