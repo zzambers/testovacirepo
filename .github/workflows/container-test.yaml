@@ -39,7 +39,7 @@ jobs:
     runs-on: ${{ needs.select-os.outputs.os }}
     steps:
       - name: Check system
-        uses: docker://${{ needs.select-os.outputs.container }}
+        uses: docker://centos:6
         with:
           args: ls -lah
 
