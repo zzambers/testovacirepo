@@ -1,0 +1,30 @@
+name: "Parametrized build"
+
+on:
+  push:
+    branches:
+      - "parametrized-build"
+
+jobs:
+  select-os:
+    name: select os
+    runs-on: "ubuntu-latest"
+    outputs:
+      os: ${{ steps.system-select.outputs.os }}
+    steps:
+      - name: system-select
+        run: |
+          echo "::set-output name=os::ubuntu-latest"
+
+# https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#jobsjob_idoutputs
+  run:
+    name: run os
+    needs: select-os
+    runs-on: ${{ needs.select-os.outputs.os }}
+    steps:
+      - name: Check system
+        run: |
+          cat /etc/os-release || true
+          id
+          pwd
+          ls -lah
