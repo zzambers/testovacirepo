@@ -15,7 +15,7 @@ jobs:
     steps:
       - id: system-select
         run: |
-          echo "::set-output name=os::ubuntu"
+          echo "::set-output name=os::ubuntu-latest"
           echo "::set-output name=container::centos:6"
 
 # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#jobsjob_idoutputs
