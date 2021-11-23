@@ -11,16 +11,34 @@ jobs:
     runs-on: "ubuntu-latest"
     outputs:
       os: ${{ steps.system-select.outputs.os }}
+      container: ${{ steps.system-select.outputs.container }}
     steps:
       - id: system-select
         run: |
-          echo "::set-output name=os::ubuntu-latest"
+          echo "::set-output name=os::ubuntu"
+          echo "::set-output name=container::centos:6"
 
 # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#jobsjob_idoutputs
   run:
     name: run-os
     needs: select-os
+    if: ${{ needs.select-os.outputs.container == 0 }}
     runs-on: ${{ needs.select-os.outputs.os }}
+    steps:
+      - name: Check system
+        run: |
+          cat /etc/os-release || true
+          id
+          pwd
+          ls -lah
+
+  run:
+    name: run-container
+    needs: select-os
+    if: ${{ needs.select-os.outputs.container != 0 }}
+    runs-on: ${{ needs.select-os.outputs.os }}
+    container:
+      image: ${{ needs.select-os.outputs.container }}
     steps:
       - name: Check system
         run: |
