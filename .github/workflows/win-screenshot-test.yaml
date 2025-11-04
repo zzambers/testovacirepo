@@ -1,0 +1,81 @@
+name: "Project build"
+
+on:
+  push:
+    branches:
+      - "test-win-screenshot"
+
+jobs:
+  build-project:
+    name: Screenshot
+    runs-on: "windows-2025"
+    env:
+      VS2010_DIR: "VS2010Express1"
+      VS2010_FILENAME: "VS2010Express1.iso"
+      VS2010_URL: "https://archive.org/download/vs-2010-express-1/VS2010Express1.iso"
+      VS2010_TORRENT_URL: "https://archive.org/download/vs-2010-express-1/vs-2010-express-1_archive.torrent"
+      VS2010_TORRENT_DIR: "vs-2010-express-1"
+      VS2010_SHA256: "a9d5dcdf55e539a06547a8ebbc63d55dc167113e09ee9e42096ab9098313039b"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup msys
+        uses: msys2/setup-msys2@v2
+        with:
+          release: false
+          install: psmisc zip unzip
+      - name: Restore Visual Studio 2010 from cache
+        id: vs2010
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/${{ env.VS2010_DIR }}
+          key: vs2010
+      - name: Download and unpack Visual Studio 2010
+        run: |
+          mkdir "$Env:GITHUB_WORKSPACE\$env:VS2010_DIR"
+          $ImagePath = "$Env:GITHUB_WORKSPACE/$env:VS2010_TORRENT_DIR/$env:VS2010_FILENAME"
+          & aria2c -d "$Env:GITHUB_WORKSPACE" --seed-time=0 --bt-stop-timeout=300 "$env:VS2010_TORRENT_URL" || & curl -L "$env:VS2010_URL" -o "$ImagePath" --create-dirs
+          $FileHash = Get-FileHash -Algorithm SHA256 "$ImagePath"
+          $FileHash.Hash -eq $env:VS2010_SHA256
+          & 7z x -o"$Env:GITHUB_WORKSPACE/$env:VS2010_DIR" "$ImagePath"
+          & dir "$Env:GITHUB_WORKSPACE/$env:VS2010_DIR"
+        if: steps.vs2010.outputs.cache-hit != 'true'
+      - name: install powershell2
+        run: |
+          & curl -LJO "https://download.microsoft.com/download/2b37839b-e146-465a-a78c-c9066609c553/ps2DLC.zip"
+          & unzip ps2DLC.zip
+          cd ps2DLC
+          & powershell.exe -executionpolicy bypass -file ./loadGAC.ps1
+      - name: Install VS2010
+        shell: msys2 {0}
+        working-directory: ${{ runner.temp }}
+        timeout-minutes: 5
+        run: |
+          set -eux
+          curl -LJO https://raw.githubusercontent.com/npocmaka/batch.scripts/refs/heads/master/hybrids/.net/c/screenCapture.bat
+          {
+          i=0
+          while [ $i -lt 60 ] ; do
+            MSYS2_ARG_CONV_EXCL="*" ./screenCapture.bat "${GITHUB_WORKSPACE}/screen-$i.png"
+            sleep 10
+            i=$(( i + 1 ))
+          done
+          } &
+          MSYS2_ARG_CONV_EXCL="*"  "$GITHUB_WORKSPACE/$VS2010_DIR/VCExpress/setup.exe" "/q" "/norestart" "/l*v" "$GITHUB_WORKSPACE/all.log"
+      - name: 'print log'
+        if: always()
+        shell: msys2 {0}
+        run: |
+          cat "$GITHUB_WORKSPACE/all.log"
+      - name: 'move screenshots'
+        if: always()
+        shell: msys2 {0}
+        run: |
+          mkdir "${GITHUB_WORKSPACE}/screenshots"
+          mv "${GITHUB_WORKSPACE}"/screen-*.png "${GITHUB_WORKSPACE}"/screenshots
+      - name: 'Upload Artifact'
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot
+          path: ${{ github.workspace }}/screenshots
